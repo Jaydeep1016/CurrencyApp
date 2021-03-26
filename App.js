@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import Snackbar from 'react-native-snackbar';
 
 const currencyPerRupee = {
   DOLLAR: 0.014,
@@ -25,6 +26,19 @@ const App = () => {
   const [inputValue, setInputValue] = useState(0);
   const [resultValue, setResultValue] = useState(0);
 
+  const buttonPressed = currency => {
+    if (!inputValue) {
+      return Snackbar.show({
+        text: 'Enter Value',
+        backgroundColor: '#EA7773',
+        textColor: '#FFFFFF',
+        duration: Snackbar.LENGTH_LONG,
+      });
+    }
+    let result = parseFloat(inputValue) * currencyPerRupee[currency];
+    setResultValue(result.toFixed(2));
+  };
+
   return (
     <>
       <ScrollView
@@ -33,18 +47,25 @@ const App = () => {
         contentInsetAdjustmentBehavior="automatic">
         <SafeAreaView style={styles.container}>
           <View style={styles.resultContainer}>
-            <Text style={styles.resultValue}>12.23</Text>
+            <Text style={styles.resultValue}>{resultValue}</Text>
           </View>
           <View style={styles.InputContainer}>
             <TextInput
               style={styles.input}
               keyboardType="numeric"
               placeholder="Enter Value"
-              placeholderTextColor="#c1c1c1"></TextInput>
+              placeholderTextColor="#c1c1c1"
+              value={inputValue}
+              onChangeText={inputValue =>
+                setInputValue(inputValue)
+              }></TextInput>
           </View>
           <View style={styles.convertButtonContainer}>
             {Object.keys(currencyPerRupee).map(currency => (
-              <TouchableOpacity key={currency} style={styles.converterButton}>
+              <TouchableOpacity
+                key={currency}
+                style={styles.converterButton}
+                onPress={() => buttonPressed(currency)}>
                 <Text style={styles.convertButtoText}>{currency}</Text>
               </TouchableOpacity>
             ))}
@@ -80,7 +101,8 @@ const styles = new StyleSheet.create({
     marginTop: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
+    // borderWidth: 2,
+    borderBottomWidth: 2,
     borderColor: '#bbe1fa',
   },
   input: {
